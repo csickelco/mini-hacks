@@ -5,6 +5,11 @@ import java.util.List;
 
 import edu.stanford.nlp.util.CoreMap;
 
+/**
+ * 
+ * @author christinasickelco
+ *
+ */
 public class ExcessiveExclamationPoints implements SnarkTellDetector {
 
 	@Override
