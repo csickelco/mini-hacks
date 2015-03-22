@@ -15,8 +15,11 @@ import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
 import org.minihacks.snarker.tells.ExcessiveExclamationPoints;
+import org.minihacks.snarker.tells.FilePhraseDetector;
 import org.minihacks.snarker.tells.LemmaTellDetector;
 import org.minihacks.snarker.tells.OneWordSentence;
+import org.minihacks.snarker.tells.RegexAllDetector;
+import org.minihacks.snarker.tells.RegexSentenceDetector;
 import org.minihacks.snarker.tells.SnarkTell;
 import org.minihacks.snarker.tells.SnarkTellDetector;
 
@@ -60,11 +63,108 @@ public class Snarker {
 		hostileMuchWords.addAll(Arrays.asList(hostileMuchWordsArray));
 		hostileMuch.setTellWords(hostileMuchWords);
 		
+		LemmaTellDetector excessivelyConversational = new LemmaTellDetector();
+		excessivelyConversational.setName("Excessively conversational");
+		Set<String> excessivelyConversationalWords = new HashSet<>();
+		String[] excessivelyConversationalArray = new String[]{
+				"uh", "uhh", "hm", "hmm", "okay", "literally"};
+		excessivelyConversationalWords.addAll(Arrays.asList(excessivelyConversationalArray));
+		excessivelyConversational.setTellWords(excessivelyConversationalWords);
+		
 		OneWordSentence oneWordSentence = new OneWordSentence();
 		ExcessiveExclamationPoints excessiveExclamationPoints = new ExcessiveExclamationPoints();
 		
+		RegexSentenceDetector knowingPhraseDetector = new RegexSentenceDetector();
+		knowingPhraseDetector.setName("KnowingPhrases");
+		Set<String> phrases = new HashSet<>();
+		String[] knowingWords = new String[]{
+				"not that hard", 
+				"of course", 
+				"should make that .* clear", 
+				"you might think", 
+				"you'd be wrong", 
+				"you would be .* wrong",
+				"type of .* person",
+				"if this is your .*",
+				"you probably",
+				"('s)|(is)|(was) (\\b){0,4} (right)|(wrong)|(bad)|(good)",
+				"in real life",
+				"now you know"
+		};
+		phrases.addAll(Arrays.asList(knowingWords));
+		knowingPhraseDetector.setTellExpressions(phrases);
+		
+		RegexSentenceDetector hostileVerbDetector = new RegexSentenceDetector();
+		hostileVerbDetector.setName("Hostile Verbs");
+		Set<String> hostileVerbPhrases = new HashSet<>();
+		String[] hostileVerbPhrasesArray = new String[]{
+				"dream(ed)*(s)* up",
+				"trying to be",
+				"tries to be",
+				"getting their way",
+				"getting his way",
+				"getting her way",
+				"getting your way"
+		};
+		phrases.addAll(Arrays.asList(hostileVerbPhrasesArray));
+		hostileVerbDetector.setTellExpressions(hostileVerbPhrases);
+		
+		RegexSentenceDetector pawpDetector = new RegexSentenceDetector();
+		pawpDetector.setName("Passive Agressive Wishy-Washy Phrases");
+		Set<String> pawpExpressions = new HashSet<>();
+		String[] pawpArray = new String[]{
+				"we're not saying",
+				"i'm not saying",
+				"we are not saying",
+				"i am not saying",
+				"not (quite)* in the way",
+				"quasi"
+		};
+		pawpExpressions.addAll(Arrays.asList(pawpArray));
+		pawpDetector.setTellExpressions(pawpExpressions);
+		
+		RegexSentenceDetector excessivelyConversationalPhraseDetector = new RegexSentenceDetector();
+		excessivelyConversationalPhraseDetector.setName("Excessively conversational phrase detector");
+		Set<String> conversationalPhrases = new HashSet<>();
+		String[] conversationalPhraseArray = new String[]{
+				", you know",
+				"or whatever",
+				"sure are"
+		};
+		conversationalPhrases.addAll(Arrays.asList(conversationalPhraseArray));
+		excessivelyConversationalPhraseDetector.setTellExpressions(conversationalPhrases);
+
+		RegexAllDetector sarcasmDetector1 = new RegexAllDetector();
+		sarcasmDetector1.setName("SarcasmDetector1");
+		Set<String> phrases2 = new HashSet<>();
+		String[] pattern2 = new String[]{
+				"(\\b\\w+\\b){1,5}\\?\\s*(\\b\\w+\\b){1,3}"
+		};
+		phrases2.addAll(Arrays.asList(pattern2));
+		sarcasmDetector1.setTellExpressions(phrases2);
+		
+		RegexAllDetector fakeEnthusiasmDetector = new RegexAllDetector();
+		fakeEnthusiasmDetector.setName("Fake enthusiasm");
+		Set<String> phrases3 = new HashSet<>();
+		String[] pattern3 = new String[]{
+				"((\\b\\w+\\b){1,7}\\!\\s*(\\b\\w+\\b){1,7}\\!)"
+		};
+		phrases3.addAll(Arrays.asList(pattern3));
+		fakeEnthusiasmDetector.setTellExpressions(phrases3);
+		
+		FilePhraseDetector profanityDetector = new FilePhraseDetector();
+		profanityDetector.setName("Profanity Detector");
+		profanityDetector.setFile("profanity.txt");
+
 		SnarkTellDetector detectors[] = {excessiveExclamationPoints, oneWordSentence, 
-				superiorityComplex, hostileMuch};
+				superiorityComplex, hostileMuch, excessivelyConversational,
+				knowingPhraseDetector,
+				hostileVerbDetector,
+				pawpDetector,
+				excessivelyConversationalPhraseDetector,
+				sarcasmDetector1,
+				profanityDetector,
+				fakeEnthusiasmDetector};
 		StanfordCoreNLP pipeline;
 		ArticleExtractor ae = ArticleExtractor.INSTANCE;
 		
