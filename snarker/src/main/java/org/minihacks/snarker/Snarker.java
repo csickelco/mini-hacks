@@ -22,6 +22,7 @@ import org.minihacks.snarker.tells.RegexAllDetector;
 import org.minihacks.snarker.tells.RegexSentenceDetector;
 import org.minihacks.snarker.tells.SnarkTell;
 import org.minihacks.snarker.tells.SnarkTellDetector;
+import org.minihacks.snarker.tells.SnarkTell.SnarkDimension;
 
 import com.rometools.rome.feed.synd.SyndEntry;
 import com.rometools.rome.feed.synd.SyndFeed;
@@ -47,12 +48,14 @@ public class Snarker {
 				"clearly", "plainly", "tolerable", "apparently",
 				"certainly", "definitely", "evidently", "surely"};
 		words.addAll(Arrays.asList(superiorityWords));
+		superiorityComplex.setDimension(SnarkDimension.KNOWING);
 		superiorityComplex.setTellWords(words);
 		
 		//This one probably needs refinement. What if the topic is poison? or garbage?
 		//Also, there has to be a ton of words we're missing
 		//Would sentiment analysis help?
 		LemmaTellDetector hostileMuch = new LemmaTellDetector();
+		superiorityComplex.setDimension(SnarkDimension.HOSTILE);
 		hostileMuch.setName("Hostile much?");
 		Set<String> hostileMuchWords = new HashSet<>();
 		String[] hostileMuchWordsArray = new String[]{
@@ -65,6 +68,7 @@ public class Snarker {
 		
 		LemmaTellDetector excessivelyConversational = new LemmaTellDetector();
 		excessivelyConversational.setName("Excessively conversational");
+		excessivelyConversational.setDimension(SnarkDimension.IRREVERENT);
 		Set<String> excessivelyConversationalWords = new HashSet<>();
 		String[] excessivelyConversationalArray = new String[]{
 				"uh", "uhh", "hm", "hmm", "okay", "literally"};
@@ -76,60 +80,70 @@ public class Snarker {
 		
 		RegexSentenceDetector knowingPhraseDetector = new RegexSentenceDetector();
 		knowingPhraseDetector.setName("KnowingPhrases");
+		knowingPhraseDetector.setDimension(SnarkDimension.KNOWING);
 		Set<String> phrases = new HashSet<>();
 		String[] knowingWords = new String[]{
-				"not that hard", 
-				"of course", 
-				"should make that .* clear", 
-				"you might think", 
-				"you'd be wrong", 
-				"you would be .* wrong",
-				"type of .* person",
-				"if this is your .*",
-				"you probably",
-				"('s)|(is)|(was) (\\b){0,4} (right)|(wrong)|(bad)|(good)",
-				"in real life",
-				"now you know"
+				".*not that hard.*", 
+				".*of course.*", 
+				".*should make that .* clear.*", 
+				".*you might think.*", 
+				".*you'd be wrong.*", 
+				".*you would be .* wrong.*",
+				".*type of .* person.*",
+				".*if this is your .*",
+				".*you probably.*",
+				".*('s)|(is)|(was) (\\b){0,4} (right)|(wrong)|(bad)|(good).*",
+				".*in real life.*",
+				".*now you know.*"
 		};
 		phrases.addAll(Arrays.asList(knowingWords));
 		knowingPhraseDetector.setTellExpressions(phrases);
 		
 		RegexSentenceDetector hostileVerbDetector = new RegexSentenceDetector();
 		hostileVerbDetector.setName("Hostile Verbs");
+		hostileVerbDetector.setDimension(SnarkDimension.HOSTILE);
 		Set<String> hostileVerbPhrases = new HashSet<>();
-		String[] hostileVerbPhrasesArray = new String[]{
-				"dream(ed)*(s)* up",
-				"trying to be",
-				"tries to be",
-				"getting their way",
-				"getting his way",
-				"getting her way",
-				"getting your way"
+		String[] hostilePhrases = new String[]{
+				".*dream(ed)*(s)* up.*",
+				".*trying to be.*",
+				".*tries to be.*",
+				".*getting their way.*",
+				".*getting his way.*",
+				".*getting her way.*",
+				".*getting your way.*",
+				".*\\, please\\."
 		};
-		phrases.addAll(Arrays.asList(hostileVerbPhrasesArray));
+		phrases.addAll(Arrays.asList(hostilePhrases));
 		hostileVerbDetector.setTellExpressions(hostileVerbPhrases);
 		
 		RegexSentenceDetector pawpDetector = new RegexSentenceDetector();
 		pawpDetector.setName("Passive Agressive Wishy-Washy Phrases");
+		pawpDetector.setDimension(SnarkDimension.HOSTILE);
 		Set<String> pawpExpressions = new HashSet<>();
 		String[] pawpArray = new String[]{
-				"we're not saying",
-				"i'm not saying",
-				"we are not saying",
-				"i am not saying",
-				"not (quite)* in the way",
-				"quasi"
+				".*we're not saying.*",
+				".*i'm not saying.*",
+				".*we are not saying.*",
+				".*i am not saying.*",
+				".*not (quite)* in the way.*",
+				".*quasi.*"
 		};
 		pawpExpressions.addAll(Arrays.asList(pawpArray));
 		pawpDetector.setTellExpressions(pawpExpressions);
 		
 		RegexSentenceDetector excessivelyConversationalPhraseDetector = new RegexSentenceDetector();
 		excessivelyConversationalPhraseDetector.setName("Excessively conversational phrase detector");
+		excessivelyConversationalPhraseDetector.setDimension(SnarkDimension.IRREVERENT);
 		Set<String> conversationalPhrases = new HashSet<>();
 		String[] conversationalPhraseArray = new String[]{
-				", you know",
-				"or whatever",
-				"sure are"
+				".*\\, you know.*",
+				".*or whatever.*",
+				".*sure are.*",
+				".*\\, you know.*\\?",
+				".*\\bsuper\\b.*",
+				"because .*", //starting a sentence with because
+				"but .",	  //starting a sentence with but
+				".*\\.\\.\\.(\\b\\w+\\b){1,3}" //which is...something.
 		};
 		conversationalPhrases.addAll(Arrays.asList(conversationalPhraseArray));
 		excessivelyConversationalPhraseDetector.setTellExpressions(conversationalPhrases);
@@ -138,9 +152,11 @@ public class Snarker {
 		sarcasmDetector1.setName("SarcasmDetector1");
 		Set<String> phrases2 = new HashSet<>();
 		String[] pattern2 = new String[]{
-				"(\\b\\w+\\b){1,5}\\?\\s*(\\b\\w+\\b){1,3}"
+				"(\\b\\w+\\b){1,5}\\?\\s*(\\b\\w+\\b){1,3}",
+				"\\, (\\b\\w+\\b){1,4}\\!"
 		};
 		phrases2.addAll(Arrays.asList(pattern2));
+		sarcasmDetector1.setDimension(SnarkDimension.HOSTILE);
 		sarcasmDetector1.setTellExpressions(phrases2);
 		
 		RegexAllDetector fakeEnthusiasmDetector = new RegexAllDetector();
@@ -150,14 +166,20 @@ public class Snarker {
 				"((\\b\\w+\\b){1,7}\\!\\s*(\\b\\w+\\b){1,7}\\!)"
 		};
 		phrases3.addAll(Arrays.asList(pattern3));
+		fakeEnthusiasmDetector.setDimension(SnarkDimension.HOSTILE);
 		fakeEnthusiasmDetector.setTellExpressions(phrases3);
 		
 		FilePhraseDetector profanityDetector = new FilePhraseDetector();
+		profanityDetector.setDimension(SnarkDimension.IRREVERENT);
 		profanityDetector.setName("Profanity Detector");
 		profanityDetector.setFile("profanity.txt");
 
-		SnarkTellDetector detectors[] = {excessiveExclamationPoints, oneWordSentence, 
-				superiorityComplex, hostileMuch, excessivelyConversational,
+		SnarkTellDetector detectors[] = {
+				excessiveExclamationPoints, 
+				oneWordSentence, 
+				superiorityComplex, 
+				hostileMuch, 
+				excessivelyConversational,
 				knowingPhraseDetector,
 				hostileVerbDetector,
 				pawpDetector,

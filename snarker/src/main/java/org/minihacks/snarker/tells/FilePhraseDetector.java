@@ -14,6 +14,8 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.minihacks.snarker.tells.SnarkTell.SnarkDimension;
+
 import edu.stanford.nlp.ling.CoreAnnotations;
 import edu.stanford.nlp.pipeline.Annotation;
 import edu.stanford.nlp.pipeline.StanfordCoreNLP;
@@ -23,12 +25,19 @@ public class FilePhraseDetector implements SnarkTellDetector {
 
 	private String name;
 	private Set<Pattern> tellExpressions = new HashSet<>();
+	private SnarkDimension dimension;
 	
 	public String getName() {
 		return name;
 	}
 	public void setName(String name) {
 		this.name = name;
+	}
+	public SnarkDimension getDimension() {
+		return dimension;
+	}
+	public void setDimension(SnarkDimension dimension) {
+		this.dimension = dimension;
 	}
 	public void setFile(String file) throws IOException {
 		InputStream in = null;

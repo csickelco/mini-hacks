@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
+import org.minihacks.snarker.tells.SnarkTell.SnarkDimension;
+
 import de.l3s.boilerpipe.extractors.ArticleExtractor;
 import edu.stanford.nlp.ling.CoreAnnotations.LemmaAnnotation;
 import edu.stanford.nlp.ling.CoreAnnotations.TokensAnnotation;
@@ -20,6 +22,7 @@ public class LemmaTellDetector implements SnarkTellDetector {
 
 	private String name;
 	private Set<String> tellWords = new HashSet<>();
+	private SnarkDimension dimension;
 	
 	public String getName() {
 		return name;
@@ -32,6 +35,12 @@ public class LemmaTellDetector implements SnarkTellDetector {
 	}
 	public void setTellWords(Set<String> tellWords) {
 		this.tellWords = tellWords;
+	}
+	public SnarkDimension getDimension() {
+		return dimension;
+	}
+	public void setDimension(SnarkDimension dimension) {
+		this.dimension = dimension;
 	}
 	
 	@Override

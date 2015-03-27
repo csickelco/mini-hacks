@@ -9,6 +9,8 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.minihacks.snarker.tells.SnarkTell.SnarkDimension;
+
 import edu.stanford.nlp.ling.CoreAnnotations;
 import edu.stanford.nlp.pipeline.Annotation;
 import edu.stanford.nlp.pipeline.StanfordCoreNLP;
@@ -18,12 +20,19 @@ public class RegexAllDetector implements SnarkTellDetector {
 
 	private String name;
 	private Set<Pattern> tellExpressions = new HashSet<>();
+	private SnarkDimension dimension;
 	
 	public String getName() {
 		return name;
 	}
 	public void setName(String name) {
 		this.name = name;
+	}
+	public SnarkDimension getDimension() {
+		return dimension;
+	}
+	public void setDimension(SnarkDimension dimension) {
+		this.dimension = dimension;
 	}
 	public Set<Pattern> getTellExpressions() {
 		return tellExpressions;
@@ -56,6 +65,7 @@ public class RegexAllDetector implements SnarkTellDetector {
 		
 		retval.setName(name);
 		retval.setOffenders(offenders);
+		retval.setDimension(dimension);
 		return retval;
 	}
 
@@ -68,6 +78,7 @@ public class RegexAllDetector implements SnarkTellDetector {
 		
 		RegexAllDetector d2 = new RegexAllDetector();
 		d2.setName("SarcasmDetector");
+		d2.setDimension(SnarkDimension.HOSTILE);
 		Set<String> phrases2 = new HashSet<>();
 		String[] pattern2 = new String[]{
 				"((\\b\\w+\\b){1,5}\\?\\s*(\\b\\w+\\b){1,3})"
@@ -84,6 +95,7 @@ public class RegexAllDetector implements SnarkTellDetector {
 		//Sarcasm - Excessive exclamations, particularly ,(few words*)…! (And have the buttler draw a warm batch, please!”
 		RegexAllDetector d3 = new RegexAllDetector();
 		d3.setName("SarcasmDetector2");
+		d3.setDimension(SnarkDimension.HOSTILE);
 		Set<String> phrases3 = new HashSet<>();
 		String[] pattern3 = new String[]{
 				"((\\b\\w+\\b){1,7}\\!\\s*(\\b\\w+\\b){1,7}\\!)"

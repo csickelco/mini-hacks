@@ -9,6 +9,8 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.minihacks.snarker.tells.SnarkTell.SnarkDimension;
+
 import edu.stanford.nlp.ling.CoreAnnotations;
 import edu.stanford.nlp.pipeline.Annotation;
 import edu.stanford.nlp.pipeline.StanfordCoreNLP;
@@ -18,19 +20,27 @@ public class RegexSentenceDetector implements SnarkTellDetector {
 
 	private String name;
 	private Set<Pattern> tellExpressions = new HashSet<>();
+	private SnarkDimension dimension;
 	
 	public String getName() {
 		return name;
 	}
 	public void setName(String name) {
 		this.name = name;
+	}	
+	public SnarkDimension getDimension() {
+		return dimension;
 	}
+	public void setDimension(SnarkDimension dimension) {
+		this.dimension = dimension;
+	}
+	
 	public Set<Pattern> getTellExpressions() {
 		return tellExpressions;
 	}
 	public void setTellExpressions(Set<String> tellExpressionStrings) {
 		for (String tellExpression : tellExpressionStrings) {
-			Pattern p = Pattern.compile(".*" + tellExpression + ".*");
+			Pattern p = Pattern.compile(tellExpression);
 			tellExpressions.add(p);
 		}
 	}
@@ -52,6 +62,7 @@ public class RegexSentenceDetector implements SnarkTellDetector {
 		
 		retval.setName(name);
 		retval.setOffenders(offenders);
+		retval.setDimension(dimension);
 		return retval;
 	}
 
@@ -68,18 +79,32 @@ public class RegexSentenceDetector implements SnarkTellDetector {
 		RegexSentenceDetector d = new RegexSentenceDetector();
 		d.setName("KnowingPhrases");
 		Set<String> phrases = new HashSet<>();
-		String[] knowingWords = new String[]{
-				"not that hard", 
-				"of course", 
-				"should make that .* clear", 
-				"you might think", 
-				"you'd be wrong", 
-				"you would be .* wrong",
-				"type of .* person"
+		String[] sarcasmPatterns = new String[]{
+				".*not that hard.*", 
+				".*of course.*", 
+				".*should make that .* clear.*", 
+				".*you might think.*", 
+				".*you'd be wrong.*", 
+				".*you would be .* wrong.*",
+				".*type of .* person.*"
 		};
-		phrases.addAll(Arrays.asList(knowingWords));
+		phrases.addAll(Arrays.asList(sarcasmPatterns));
 		d.setTellExpressions(phrases);
 		SnarkTell t = d.detect(sentences);
+		System.out.println(t);
+		
+		annotation = pipeline.process("And have the buttler draw a warm batch, please! something else. Thanks for the net neutrality, Oligarchs.");
+		sentences = annotation.get(CoreAnnotations.SentencesAnnotation.class);
+		d = new RegexSentenceDetector();
+		d.setName("Sarcasm");
+		phrases = new HashSet<>();
+		sarcasmPatterns = new String[]{
+				".*\\, (\\b\\w+\\b){1,4}\\!",
+				"thanks\\b.*"
+		};
+		phrases.addAll(Arrays.asList(sarcasmPatterns));
+		d.setTellExpressions(phrases);
+		t = d.detect(sentences);
 		System.out.println(t);
 	}
 

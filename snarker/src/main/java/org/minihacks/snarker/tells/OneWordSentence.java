@@ -3,6 +3,8 @@ package org.minihacks.snarker.tells;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.minihacks.snarker.tells.SnarkTell.SnarkDimension;
+
 import edu.stanford.nlp.ling.CoreAnnotations.TokensAnnotation;
 import edu.stanford.nlp.ling.CoreLabel;
 import edu.stanford.nlp.util.CoreMap;
@@ -24,6 +26,7 @@ public class OneWordSentence implements SnarkTellDetector {
 		
 		retval.setName("One Word Sentence");
 		retval.setOffenders(offenders);
+		retval.setDimension(SnarkDimension.HOSTILE);
 		
 		return retval;
 	}
