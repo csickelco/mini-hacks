@@ -55,7 +55,7 @@ public class Snarker {
 		//Also, there has to be a ton of words we're missing
 		//Would sentiment analysis help?
 		LemmaTellDetector hostileMuch = new LemmaTellDetector();
-		superiorityComplex.setDimension(SnarkDimension.HOSTILE);
+		hostileMuch.setDimension(SnarkDimension.HOSTILE);
 		hostileMuch.setName("Hostile much?");
 		Set<String> hostileMuchWords = new HashSet<>();
 		String[] hostileMuchWordsArray = new String[]{
@@ -203,7 +203,9 @@ public class Snarker {
 		*/
 		
 		for (String url : urls) {
-			System.out.println("=== Processing " + url + "===");
+			Set<SnarkDimension> dimensions = new HashSet<>();
+			
+			//System.out.println("=== Processing " + url + "===");
 
 			String urlLower = url.toLowerCase();
 			String text = null;
@@ -219,8 +221,16 @@ public class Snarker {
 			List<CoreMap> sentences = annotation.get(CoreAnnotations.SentencesAnnotation.class);
 			for (SnarkTellDetector detector : detectors) {
 				SnarkTell tellResult = detector.detect(sentences);
-				System.out.println(tellResult);
+				if( tellResult.getOffenders().size() > 0 ) {
+					dimensions.add(tellResult.getDimension());
+					//System.out.println(tellResult);
+				}
 			}	
+			if( dimensions.size() == 3 ) {
+				System.out.println("!!!" + url + ": " + dimensions);
+			} else {
+				System.out.println(url + ": " + dimensions);
+			}
 			//System.out.println("----------------------");
 		}
 

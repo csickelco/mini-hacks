@@ -79,6 +79,7 @@ public class FilePhraseDetector implements SnarkTellDetector {
 		}
 		
 		retval.setName(name);
+		retval.setDimension(dimension);
 		retval.setOffenders(offenders);
 		return retval;
 	}

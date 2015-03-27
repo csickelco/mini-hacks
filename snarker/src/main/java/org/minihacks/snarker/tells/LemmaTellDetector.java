@@ -59,6 +59,7 @@ public class LemmaTellDetector implements SnarkTellDetector {
 		
 		retval.setName(name);
 		retval.setOffenders(offenders);
+		retval.setDimension(dimension);
 		return retval;
 	}
 
