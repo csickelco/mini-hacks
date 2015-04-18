@@ -1,30 +1,20 @@
 package org.minihacks.snarker;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Properties;
-import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
 import org.minihacks.snarker.config.SnarkerConfig;
-import org.minihacks.snarker.tells.ExcessiveExclamationPoints;
-import org.minihacks.snarker.tells.FilePhraseDetector;
-import org.minihacks.snarker.tells.LemmaTellDetector;
-import org.minihacks.snarker.tells.OneWordSentence;
-import org.minihacks.snarker.tells.RegexAllDetector;
-import org.minihacks.snarker.tells.RegexSentenceDetector;
 import org.minihacks.snarker.tells.SnarkTell;
 import org.minihacks.snarker.tells.SnarkTellDetector;
-import org.minihacks.snarker.tells.SnarkTell.SnarkDimension;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.support.AbstractApplicationContext;
 
@@ -36,6 +26,7 @@ import com.rometools.rome.io.FeedException;
 import com.rometools.rome.io.SyndFeedInput;
 import com.rometools.rome.io.XmlReader;
 
+import de.l3s.boilerpipe.BoilerpipeProcessingException;
 import de.l3s.boilerpipe.extractors.ArticleExtractor;
 import edu.stanford.nlp.ling.CoreAnnotations;
 import edu.stanford.nlp.pipeline.Annotation;
@@ -43,6 +34,49 @@ import edu.stanford.nlp.pipeline.StanfordCoreNLP;
 import edu.stanford.nlp.util.CoreMap;
 
 public class Snarker {
+	
+	private List<SnarkTellDetector> detectors;
+	StanfordCoreNLP pipeline;
+
+	public List<SnarkTellDetector> getDetectors() {
+		return detectors;
+	}
+	public void setDetectors(List<SnarkTellDetector> detectors) {
+		this.detectors = detectors;
+	}
+	public StanfordCoreNLP getPipeline() {
+		return pipeline;
+	}
+	public void setPipeline(StanfordCoreNLP pipeline) {
+		this.pipeline = pipeline;
+	}
+
+	public SnarkReport processText(String articleName, String text) {
+		SnarkReport retval = new SnarkReport();
+		
+		retval.setArticle(articleName);
+		Annotation annotation = pipeline.process(text);
+		List<CoreMap> sentences = annotation.get(CoreAnnotations.SentencesAnnotation.class);
+		for (SnarkTellDetector detector : detectors) {
+			SnarkTell tellResult = detector.detect(sentences);
+			if( tellResult.getOffenders().size() > 0 ) {
+				retval.addDimension(tellResult.getDimension());
+			}
+		}	
+		
+		return retval;
+	}
+	
+	public SnarkReport processUrl(String articleName, String url) throws MalformedURLException, BoilerpipeProcessingException {
+		ArticleExtractor ae = ArticleExtractor.INSTANCE;		
+		String text = ae.getText(new URL(url));
+		return processText(articleName, text);
+	}
+	
+	public SnarkReport processFile(String articleName, String filepath) throws FileNotFoundException, IOException {	
+		String text = IOUtils.toString(new FileReader(new File(filepath)));
+		return processText(articleName, text);
+	}
 
 	public static void main(String[] args) throws Exception {
 		ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) org.slf4j.LoggerFactory.getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
@@ -52,15 +86,7 @@ public class Snarker {
 		AbstractApplicationContext ctx = new AnnotationConfigApplicationContext(SnarkerConfig.class);
 		ctx.registerShutdownHook();
 		
-		List<SnarkTellDetector> detectors = (List<SnarkTellDetector>)ctx.getBean("detectors");
-		
-		StanfordCoreNLP pipeline;
-		ArticleExtractor ae = ArticleExtractor.INSTANCE;
-		
-		Properties props = new Properties();
-		props.setProperty("annotators", "tokenize, ssplit, pos, lemma");
-		pipeline = new StanfordCoreNLP(props);
-
+		Snarker snarker = ctx.getBean(Snarker.class);
 		List<String> urls = getFilesFromPath("/Users/christinasickelco/Documents/snark_content");
 		/*
 		List<String> urls = getHardcodedUrls();
@@ -70,35 +96,19 @@ public class Snarker {
 		*/
 		
 		for (String url : urls) {
-			Set<SnarkDimension> dimensions = new HashSet<>();
-			
-			//System.out.println("=== Processing " + url + "===");
-
 			String urlLower = url.toLowerCase();
-			String text = null;
+			SnarkReport report;
 			if( urlLower.startsWith("http") || urlLower.startsWith("www") ) {
-				text = ae.getText(new URL(url));  
+				report = snarker.processUrl(urlLower, urlLower);
 			} else {
-				text = IOUtils.toString(new FileReader(new File(url)));
+				report = snarker.processFile(urlLower, url);
 			}
-			//System.out.println("----------------------");
-			//System.out.println("Converted text: " + text);
-			
-			Annotation annotation = pipeline.process(text);
-			List<CoreMap> sentences = annotation.get(CoreAnnotations.SentencesAnnotation.class);
-			for (SnarkTellDetector detector : detectors) {
-				SnarkTell tellResult = detector.detect(sentences);
-				if( tellResult.getOffenders().size() > 0 ) {
-					dimensions.add(tellResult.getDimension());
-					//System.out.println(tellResult);
-				}
-			}	
-			if( dimensions.size() == 3 ) {
-				System.out.println("!!!" + url + ": " + dimensions);
+
+			if( report.getDimensions().size() == 3 ) {
+				System.out.println("!!!" + report.toString());
 			} else {
-				System.out.println(url + ": " + dimensions);
+				System.out.println(report.toString());
 			}
-			//System.out.println("----------------------");
 		}
 
 	}

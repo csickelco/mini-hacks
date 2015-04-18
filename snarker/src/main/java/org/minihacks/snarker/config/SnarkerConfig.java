@@ -5,8 +5,10 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Properties;
 import java.util.Set;
 
+import org.minihacks.snarker.Snarker;
 import org.minihacks.snarker.tells.ExcessiveExclamationPoints;
 import org.minihacks.snarker.tells.FileLemmaTellDetector;
 import org.minihacks.snarker.tells.FilePhraseDetector;
@@ -18,8 +20,30 @@ import org.minihacks.snarker.tells.SnarkTell.SnarkDimension;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import de.l3s.boilerpipe.extractors.ArticleExtractor;
+import edu.stanford.nlp.pipeline.StanfordCoreNLP;
+
 @Configuration
 public class SnarkerConfig {
+	
+	@Bean
+	public Snarker snarker() throws IOException {
+		Snarker snarker = new Snarker();
+		snarker.setDetectors(detectors());
+		snarker.setPipeline(pipeline());
+		return snarker;
+	}
+	
+	@Bean
+	public StanfordCoreNLP pipeline() {
+		StanfordCoreNLP pipeline;
+		
+		Properties props = new Properties();
+		props.setProperty("annotators", "tokenize, ssplit, pos, lemma");
+		pipeline = new StanfordCoreNLP(props);
+
+		return pipeline;
+	}
 	
 	@Bean
 	public List<SnarkTellDetector> detectors () throws IOException {
