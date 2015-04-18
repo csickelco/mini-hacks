@@ -87,71 +87,10 @@ public class Snarker {
 		ctx.registerShutdownHook();
 		
 		Snarker snarker = ctx.getBean(Snarker.class);
-		List<String> urls = getFilesFromPath("/Users/christinasickelco/Documents/snark_content");
-		/*
-		List<String> urls = getHardcodedUrls();
-		List<String> urls = getUrlsFromRssFeed(
-				"http://feeds.gawker.com/gawker/full#_ga=1.231192927.1110491708.1425241352", 
-				20);
-		*/
+
+		String urlLower = "http://tktk.gawker.com/politicos-dylan-byers-works-for-fox-news-pr-1687509182/+LeahBeckmann".toLowerCase();
 		
-		for (String url : urls) {
-			String urlLower = url.toLowerCase();
-			SnarkReport report;
-			if( urlLower.startsWith("http") || urlLower.startsWith("www") ) {
-				report = snarker.processUrl(urlLower, urlLower);
-			} else {
-				report = snarker.processFile(urlLower, url);
-			}
-
-			if( report.getDimensions().size() == 3 ) {
-				System.out.println("!!!" + report.toString());
-			} else {
-				System.out.println(report.toString());
-			}
-		}
-
-	}
-	
-	public static List<String> getFilesFromPath(String path) {
-		List<String> retval = new LinkedList<>();
-		File folder = new File(path);
-		if( folder.isDirectory() ) {
-			File[] files = folder.listFiles();
-			for (File file : files) {
-				retval.add(file.getAbsolutePath());
-			}
-		} else {
-			retval.add(path);
-		}
-		return retval;
-	}
-
-	public static List<String> getHardcodedUrls() {
-		List<String> retval = new LinkedList<>();
-		retval.add("http://tktk.gawker.com/politicos-dylan-byers-works-for-fox-news-pr-1687509182/+LeahBeckmann");
-		retval.add("http://justice.gawker.com/jet-setting-freeloader-chris-christie-is-ready-to-lead-1683535337");
-		return retval;
-	}
-	
-	public static List<String> getUrlsFromRssFeed(String rssUrl, int limit) throws IOException, IllegalArgumentException, FeedException {
-		List<String> retval = new LinkedList<>();
-		int counter = 0;
-		
-		URL url = new URL(rssUrl);
-        HttpURLConnection httpcon = (HttpURLConnection)url.openConnection();
-        // Reading the feed
-        SyndFeedInput input = new SyndFeedInput();
-        SyndFeed feed = input.build(new XmlReader(httpcon));
-        List<SyndEntry> entries = feed.getEntries();
-        Iterator<SyndEntry> itEntries = entries.iterator();
- 
-        while (itEntries.hasNext() && counter < limit) {
-            SyndEntry entry = itEntries.next();
-            retval.add(entry.getLink());
-            counter++;
-        }
-        
-        return retval;
+		SnarkReport report = snarker.processUrl(urlLower, urlLower);	
+		System.out.println(report.toString());
 	}
 }

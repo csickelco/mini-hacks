@@ -28,6 +28,6 @@ public class SnarkReport {
 	
 	@Override
 	public String toString() {
-		return "SnarkReport [article=" + article + ", dimensions=" + dimensions + "]";
+		return (dimensions.size() == 3 ? "!!!" : "") + "SnarkReport [article=" + article + ", dimensions=" + dimensions + "]";
 	}
 }
