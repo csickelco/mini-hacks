@@ -29,6 +29,10 @@ public class SnarkTell {
 		this.dimension = dimension;
 	}
 	
+	public boolean isTellFound() {
+		return offenders.size() > 0;
+	}
+	
 	@Override
 	public String toString() {
 		return "SnarkTell [offenders=" + offenders + ", name=" + name + ", dimension=" + dimension + "]";

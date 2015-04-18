@@ -40,6 +40,7 @@ public class Snarker {
 
 	public static void main(String[] args) throws Exception {
 		//Configure Detectors
+		//TODO: Replace with knowing file detectors
 		LemmaTellDetector superiorityComplex = new LemmaTellDetector();
 		superiorityComplex.setName("Superiority Complex");
 		Set<String> words = new HashSet<>();
@@ -54,6 +55,7 @@ public class Snarker {
 		//This one probably needs refinement. What if the topic is poison? or garbage?
 		//Also, there has to be a ton of words we're missing
 		//Would sentiment analysis help?
+		//TODO: Replace with hostile file detectors
 		LemmaTellDetector hostileMuch = new LemmaTellDetector();
 		hostileMuch.setDimension(SnarkDimension.HOSTILE);
 		hostileMuch.setName("Hostile much?");
@@ -66,6 +68,7 @@ public class Snarker {
 		hostileMuchWords.addAll(Arrays.asList(hostileMuchWordsArray));
 		hostileMuch.setTellWords(hostileMuchWords);
 		
+		//TODO: Replace with conversational file detectors
 		LemmaTellDetector excessivelyConversational = new LemmaTellDetector();
 		excessivelyConversational.setName("Excessively conversational");
 		excessivelyConversational.setDimension(SnarkDimension.IRREVERENT);

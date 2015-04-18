@@ -22,6 +22,7 @@ public class FeedDownloader {
 	public static void main(String[] args) throws Exception {
 		String filePath="/Users/christinasickelco/Documents/snark_content/";
 		String rssUrl = "http://feeds.gawker.com/gawker/full#_ga=1.231192927.1110491708.1425241352";
+		//String rssUrl = "http://topics.nytimes.com/top/opinion/editorialsandoped/oped/contributors/index.html?rss=1";
 		String filePrefix = filePath + "gawker-" + System.currentTimeMillis() + "-";
         int limit=50;
         ArticleExtractor ae = ArticleExtractor.INSTANCE;

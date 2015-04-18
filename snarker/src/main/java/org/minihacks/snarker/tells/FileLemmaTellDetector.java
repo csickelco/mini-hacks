@@ -7,25 +7,21 @@ import java.io.InputStreamReader;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Properties;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.minihacks.snarker.tells.SnarkTell.SnarkDimension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import edu.stanford.nlp.ling.CoreAnnotations;
-import edu.stanford.nlp.pipeline.Annotation;
-import edu.stanford.nlp.pipeline.StanfordCoreNLP;
+import edu.stanford.nlp.ling.CoreAnnotations.TokensAnnotation;
+import edu.stanford.nlp.ling.CoreLabel;
 import edu.stanford.nlp.util.CoreMap;
 
-public class FilePhraseDetector implements SnarkTellDetector {
-	Logger logger = LoggerFactory.getLogger(FilePhraseDetector.class);
+public class FileLemmaTellDetector implements SnarkTellDetector {
+	Logger logger = LoggerFactory.getLogger(FileLemmaTellDetector.class);
 	
 	private String name;
-	private Set<Pattern> tellExpressions = new HashSet<>();
+	private Set<String> tellWords = new HashSet<>();
 	private SnarkDimension dimension;
 	
 	public String getName() {
@@ -34,12 +30,19 @@ public class FilePhraseDetector implements SnarkTellDetector {
 	public void setName(String name) {
 		this.name = name;
 	}
+	public Set<String> getTellWords() {
+		return tellWords;
+	}
+	public void setTellWords(Set<String> tellWords) {
+		this.tellWords = tellWords;
+	}
 	public SnarkDimension getDimension() {
 		return dimension;
 	}
 	public void setDimension(SnarkDimension dimension) {
 		this.dimension = dimension;
 	}
+	
 	public void setFile(String file) throws IOException {
 		logger.info("Reading in file {}", file);
 		InputStream in = null;
@@ -51,9 +54,7 @@ public class FilePhraseDetector implements SnarkTellDetector {
 				String lineNormalized = line.toLowerCase().trim();
 				logger.debug("Phrase: " + lineNormalized);
 				if( lineNormalized.length() > 0 ) {
-					//TODO: Can we just concatenate all these expressions?
-					Pattern p = Pattern.compile(".*\\b" + lineNormalized + "\\b.*");
-					tellExpressions.add(p);
+					tellWords.add(lineNormalized);
 				}
 			}
 		} finally {
@@ -66,43 +67,25 @@ public class FilePhraseDetector implements SnarkTellDetector {
 			}
 		}
 	}
-
+	
 	@Override
 	public SnarkTell detect(List<CoreMap> sentences) {
 		SnarkTell retval = new SnarkTell();
 		List<String> offenders = new LinkedList<String>();
 		
 		for (CoreMap sentence : sentences) {
-			String sentenceString = sentence.toString().toLowerCase();
-			for (Pattern tellPhrase : tellExpressions) {
-				Matcher m = tellPhrase.matcher(sentenceString);
-				if(m.matches()) {
-					offenders.add(sentenceString);
-				}
-			}
+	        for (CoreLabel token: sentence.get(TokensAnnotation.class)) {
+	        	String lemma = token.lemma();
+	        	if( tellWords.contains(lemma) ) {
+	        		logger.debug("Found '{}' in '{}'", lemma, sentence.toString());
+	        		offenders.add(token.value() + "-'" + sentence.toString() + "'");
+	        	}
+	        }
 		}
 		
 		retval.setName(name);
-		retval.setDimension(dimension);
 		retval.setOffenders(offenders);
+		retval.setDimension(dimension);
 		return retval;
-	}
-
-	public static void main(String[] args) throws Exception {
-		StanfordCoreNLP pipeline;
-		
-		Properties props = new Properties();
-		props.setProperty("annotators", "tokenize, ssplit, pos, lemma");
-		pipeline = new StanfordCoreNLP(props);
-
-		Annotation annotation = pipeline.process("something something something Kick ass something something");
-		List<CoreMap> sentences = annotation.get(CoreAnnotations.SentencesAnnotation.class);
-
-		//http://fffff.at/googles-official-list-of-bad-words/
-		FilePhraseDetector d = new FilePhraseDetector();
-		d.setName("Profanity Detector");
-		d.setFile("profanity.txt");
-		SnarkTell t = d.detect(sentences);
-		System.out.println(t);
 	}
 }
