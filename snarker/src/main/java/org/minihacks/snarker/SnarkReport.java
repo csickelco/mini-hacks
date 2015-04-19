@@ -75,6 +75,24 @@ public class SnarkReport {
 		return retval;
 	}
 	
+	public String getSummary() {
+		StringBuilder sb = new StringBuilder();
+		if( knowingOffenders.size() > 0 ) {
+			sb.append("KNOWING, ");
+		}
+		if( hostileOffenders.size() > 0 ) {
+			sb.append("HOSTILE, ");
+		}
+		if( irreverentOffenders.size() > 0 ) {
+			sb.append("IRREVERENT, ");
+		}
+		if( sb.length() > 0 ) {
+			sb.delete(sb.length()-2, sb.length());
+		}
+		
+		return "Dimensions: [" + sb.toString() + "]";
+	}
+	
 	@Override
 	public String toString() {
 		return "SnarkReport [article=" + article + ", knowingOffenders=" + knowingOffenders + ", hostileOffenders="

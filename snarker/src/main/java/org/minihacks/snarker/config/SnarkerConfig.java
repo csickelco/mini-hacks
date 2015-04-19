@@ -118,7 +118,10 @@ public class SnarkerConfig {
 				".*you probably.*",
 				".*('s)|(is)|(was) (\\b){0,4} (right)|(wrong)|(bad)|(good).*",
 				".*in real life.*",
-				".*now you know.*"
+				".*now you know.*",
+				".*as always.*",
+				".*cannot emphasize.*",
+				".*can't emphasize.*"
 		};
 		phrases.addAll(Arrays.asList(knowingWords));
 		knowingPhraseDetector.setTellExpressions(phrases);
