@@ -15,7 +15,7 @@ import ch.qos.logback.classic.Level;
 public class SnarkerDirectoryProcessor {
 
 	public static void main(String[] args) throws Exception {
-		String path = "/Users/christinasickelco/GitSandbox/snarker/src/test/resources/snark"; 
+		String path = "/Users/christinasickelco/GitSandbox/snarker/src/test/resources/notsnark_justinformal"; 
 		double totalScore = 0;
 		
 		ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) org.slf4j.LoggerFactory.getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
