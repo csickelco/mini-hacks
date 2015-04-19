@@ -37,6 +37,8 @@ public class AccuracyConversationalPhrasesTellDetector {
 	 * Consists of:
 	 * General Inquirer: intrj
 	 * Own observations
+	 * https://www.speechink.com/transcribers/insurance_quickstart#Glossary
+	 * 
 	 */
 
 	@Before

@@ -1,6 +1,8 @@
 package org.minihacks.snarker.utils;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -13,19 +15,18 @@ import org.springframework.context.support.AbstractApplicationContext;
 import ch.qos.logback.classic.Level;
 
 public class SnarkerDirectoryProcessor {
+	
+	private Snarker snarker;
+	public Snarker getSnarker() {
+		return snarker;
+	}
+	public void setSnarker(Snarker snarker) {
+		this.snarker = snarker;
+	}
 
-	public static void main(String[] args) throws Exception {
-		String path = "/Users/christinasickelco/GitSandbox/snarker/src/test/resources/notsnark_justinformal"; 
+	public double processDirectory(String path) throws FileNotFoundException, IOException {
 		double totalScore = 0;
 		
-		ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) org.slf4j.LoggerFactory.getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
-		root.setLevel(Level.INFO);
-		
-		@SuppressWarnings("resource")
-		AbstractApplicationContext ctx = new AnnotationConfigApplicationContext(SnarkerConfig.class);
-		ctx.registerShutdownHook();
-		
-		Snarker snarker = ctx.getBean(Snarker.class);
 		List<String> filePaths = getFilesFromPath(path);
 		
 		for (String filePath : filePaths) {
@@ -35,10 +36,10 @@ public class SnarkerDirectoryProcessor {
 			totalScore += report.getScore();
 		}
 		
-		System.out.println("Average Score: " + (totalScore/filePaths.size()));
+		return (totalScore/filePaths.size());
 	}
 
-	public static List<String> getFilesFromPath(String path) {
+	private List<String> getFilesFromPath(String path) {
 		List<String> retval = new LinkedList<>();
 		File folder = new File(path);
 		if( folder.isDirectory() ) {
@@ -50,5 +51,21 @@ public class SnarkerDirectoryProcessor {
 			retval.add(path);
 		}
 		return retval;
+	}
+	
+	public static void main(String[] args) throws Exception {
+		String path = "/Users/christinasickelco/GitSandbox/snarker/src/test/resources/notsnark_justinformal"; 
+		ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) org.slf4j.LoggerFactory.getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
+		root.setLevel(Level.INFO);
+		
+		@SuppressWarnings("resource")
+		AbstractApplicationContext ctx = new AnnotationConfigApplicationContext(SnarkerConfig.class);
+		ctx.registerShutdownHook();
+		
+		Snarker snarker = ctx.getBean(Snarker.class);
+		SnarkerDirectoryProcessor p = new SnarkerDirectoryProcessor();
+		p.setSnarker(snarker);
+		
+		System.out.println("Average snark score: " + p.processDirectory(path));
 	}
 }

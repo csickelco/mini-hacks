@@ -183,7 +183,11 @@ public class SnarkerConfig {
 				".*\\bsuper\\b.*",
 				"because .*", //starting a sentence with because
 				"but .",	  //starting a sentence with but
-				".*\\.\\.\\.(\\b\\w+\\b){1,3}" //which is...something.
+				".*\\.\\.\\.(\\b\\w+\\b){1,3}", //which is...something.
+				"cool.", 	//Cool. Glad we had a chance to catch up.
+				"awesome.",
+				"cool\\,.*",
+				"especially .*" //starting a sentence with especially
 		};
 		conversationalPhrases.addAll(Arrays.asList(conversationalPhraseArray));
 		excessivelyConversationalPhraseDetector.setTellExpressions(conversationalPhrases);
