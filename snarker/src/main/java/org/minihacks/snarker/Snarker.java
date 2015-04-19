@@ -59,9 +59,7 @@ public class Snarker {
 		List<CoreMap> sentences = annotation.get(CoreAnnotations.SentencesAnnotation.class);
 		for (SnarkTellDetector detector : detectors) {
 			SnarkTell tellResult = detector.detect(sentences);
-			if( tellResult.getOffenders().size() > 0 ) {
-				retval.addDimension(tellResult.getDimension());
-			}
+			retval.addSnarkTell(tellResult);
 		}	
 		
 		return retval;
