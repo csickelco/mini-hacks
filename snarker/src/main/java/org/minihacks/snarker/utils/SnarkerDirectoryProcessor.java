@@ -3,18 +3,24 @@ package org.minihacks.snarker.utils;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.minihacks.snarker.SnarkReport;
 import org.minihacks.snarker.Snarker;
 import org.minihacks.snarker.config.SnarkerConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.support.AbstractApplicationContext;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
 import ch.qos.logback.classic.Level;
 
 public class SnarkerDirectoryProcessor {
+	Logger logger = LoggerFactory.getLogger(SnarkerDirectoryProcessor.class);
 	
 	private Snarker snarker;
 	public Snarker getSnarker() {
@@ -32,11 +38,30 @@ public class SnarkerDirectoryProcessor {
 		for (String filePath : filePaths) {
 			String filePathLower = filePath.toLowerCase();
 			SnarkReport report = snarker.processFile(filePathLower, filePath);
-			System.out.println(report.getArticle() + ": " + report.getScore() + "-" + report.getSummary());
+			logger.info(report.getArticle() + ": " + report.getScore() + "-" + report.getSummary());
 			totalScore += report.getScore();
 		}
 		
 		return (totalScore/filePaths.size());
+	}
+	
+	public double processResourcesOnPath(String path) throws IOException {
+		double totalScore = 0;
+		PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
+
+        // Ant-style path matching
+        Resource[] resources = resolver.getResources(path);
+
+        for (Resource resource : resources) {
+            InputStream is = resource.getInputStream();
+            SnarkReport report = snarker.processInputStream(resource.getFilename(), is);
+			logger.info(report.getArticle() + ": " + report.getScore() + "-" + report.getSummary());
+			totalScore += report.getScore();
+        }
+        
+        double averageScore = totalScore/resources.length;
+        logger.info("{} average score: {}", path, averageScore);
+        return averageScore;
 	}
 
 	private List<String> getFilesFromPath(String path) {

@@ -4,11 +4,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.net.HttpURLConnection;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
@@ -19,12 +17,6 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.support.AbstractApplicationContext;
 
 import ch.qos.logback.classic.Level;
-
-import com.rometools.rome.feed.synd.SyndEntry;
-import com.rometools.rome.feed.synd.SyndFeed;
-import com.rometools.rome.io.FeedException;
-import com.rometools.rome.io.SyndFeedInput;
-import com.rometools.rome.io.XmlReader;
 
 import de.l3s.boilerpipe.BoilerpipeProcessingException;
 import de.l3s.boilerpipe.extractors.ArticleExtractor;
@@ -74,6 +66,11 @@ public class Snarker {
 	public SnarkReport processFile(String articleName, String filepath) throws FileNotFoundException, IOException {	
 		String text = IOUtils.toString(new FileReader(new File(filepath)));
 		return processText(articleName, text);
+	}
+	
+	public SnarkReport processInputStream(String filename, InputStream inputStream) throws IOException {
+		String text = IOUtils.toString(inputStream);
+		return processText(filename, text);
 	}
 
 	public static void main(String[] args) throws Exception {
