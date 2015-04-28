@@ -25,8 +25,11 @@ public class FeedDownloader {
 		//String rssUrl = "http://topics.nytimes.com/top/opinion/editorialsandoped/oped/contributors/index.html?rss=1";
 		//String rssUrl = "http://www.wonkette.com/feed";
 		//String rssUrl = "http://www.usnews.com/rss/opinion";
-		String rssUrl = "http://fulltextrssfeed.com/www.neatorama.com/feed";
-		String filePrefix = filePath + "neatorama-" + System.currentTimeMillis() + "-";
+		//String rssUrl = "http://fulltextrssfeed.com/www.neatorama.com/feed";
+		//String rssUrl = "http://hosted2.ap.org/atom/APDEFAULT/3d281c11a96b4ad082fe88aa0db04305";
+		//String rssUrl = "http://feeds.reuters.com/reuters/topNews";
+		String rssUrl = "http://news.google.com/news?pz=1&cf=all&ned=us&hl=en&topic=b&output=rss";
+		String filePrefix = filePath + "googlenews-" + System.currentTimeMillis() + "-";
         int limit=50;
         ArticleExtractor ae = ArticleExtractor.INSTANCE;
         

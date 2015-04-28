@@ -61,9 +61,8 @@ public class TestRegexSentenceDetector {
 	public void testCool() {
 		String sentence = "Cool. Glad we had this time to catch up!";
 		Annotation annotation = pipeline.process(sentence);
-		List<CoreMap> sentences = annotation.get(CoreAnnotations.SentencesAnnotation.class);
 
-		SnarkTell st = excessivelyConversationalPhraseDetector.detect(sentences);
+		SnarkTell st = excessivelyConversationalPhraseDetector.detect(annotation);
 		logger.info("Result {}", st.toString());
 		assertTrue(st.isTellFound());
 	}
@@ -72,9 +71,8 @@ public class TestRegexSentenceDetector {
 	public void testCoolNotAlone() {
 		String sentence = "It was a cool night.";
 		Annotation annotation = pipeline.process(sentence);
-		List<CoreMap> sentences = annotation.get(CoreAnnotations.SentencesAnnotation.class);
 
-		SnarkTell st = excessivelyConversationalPhraseDetector.detect(sentences);
+		SnarkTell st = excessivelyConversationalPhraseDetector.detect(annotation);
 		logger.info("Result {}", st.toString());
 		assertFalse(st.isTellFound());
 	}
@@ -83,9 +81,8 @@ public class TestRegexSentenceDetector {
 	public void testEspecially() {
 		String sentence = "I cannot emphasize how bad of an idea this is. Especially if you are Canadian.";
 		Annotation annotation = pipeline.process(sentence);
-		List<CoreMap> sentences = annotation.get(CoreAnnotations.SentencesAnnotation.class);
 
-		SnarkTell st = excessivelyConversationalPhraseDetector.detect(sentences);
+		SnarkTell st = excessivelyConversationalPhraseDetector.detect(annotation);
 		logger.info("Result {}", st.toString());
 		assertTrue(st.isTellFound());
 	}

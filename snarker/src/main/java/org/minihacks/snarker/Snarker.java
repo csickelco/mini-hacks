@@ -48,9 +48,9 @@ public class Snarker {
 		
 		retval.setArticle(articleName);
 		Annotation annotation = pipeline.process(text);
-		List<CoreMap> sentences = annotation.get(CoreAnnotations.SentencesAnnotation.class);
+		
 		for (SnarkTellDetector detector : detectors) {
-			SnarkTell tellResult = detector.detect(sentences);
+			SnarkTell tellResult = detector.detect(annotation);
 			retval.addSnarkTell(tellResult);
 		}	
 		

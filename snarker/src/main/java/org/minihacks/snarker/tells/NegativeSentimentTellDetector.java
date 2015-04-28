@@ -18,10 +18,11 @@ import edu.stanford.nlp.util.CoreMap;
 public class NegativeSentimentTellDetector implements SnarkTellDetector {
 
 	@Override
-	public SnarkTell detect(List<CoreMap> sentences) {
+	public SnarkTell detect(Annotation annotation) {
 		SnarkTell retval = new SnarkTell();
 		
 		String[] sentimentText = { "Very Negative", "Negative", "Neutral", "Positive", "Very Positive" };
+		List<CoreMap> sentences = annotation.get(CoreAnnotations.SentencesAnnotation.class);
 		for (CoreMap sentence : sentences) {
 			Tree tree = sentence.get(SentimentCoreAnnotations.AnnotatedTree.class);
 	        int sentiment = RNNCoreAnnotations.getPredictedClass(tree);
@@ -51,7 +52,7 @@ public class NegativeSentimentTellDetector implements SnarkTellDetector {
 		List<CoreMap> sentences = annotation.get(CoreAnnotations.SentencesAnnotation.class);
 
 		NegativeSentimentTellDetector d = new NegativeSentimentTellDetector();
-		SnarkTell t = d.detect(sentences);
+		SnarkTell t = d.detect(annotation);
 		System.out.println(t);
 	}
 

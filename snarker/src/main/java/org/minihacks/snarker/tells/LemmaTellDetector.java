@@ -44,10 +44,11 @@ public class LemmaTellDetector implements SnarkTellDetector {
 	}
 	
 	@Override
-	public SnarkTell detect(List<CoreMap> sentences) {
+	public SnarkTell detect(Annotation annotation) {
 		SnarkTell retval = new SnarkTell();
 		List<String> offenders = new LinkedList<String>();
 		
+		List<CoreMap> sentences = annotation.get(CoreAnnotations.SentencesAnnotation.class);
 		for (CoreMap sentence : sentences) {
 	        for (CoreLabel token: sentence.get(TokensAnnotation.class)) {
 	        	String lemma = token.lemma();
@@ -72,7 +73,6 @@ public class LemmaTellDetector implements SnarkTellDetector {
 		pipeline = new StanfordCoreNLP(props);
 
 		Annotation annotation = pipeline.process("It was, plainly, music criticism");
-		List<CoreMap> sentences = annotation.get(CoreAnnotations.SentencesAnnotation.class);
 
 		LemmaTellDetector d = new LemmaTellDetector();
 		d.setName("Superiority Complex");
@@ -83,7 +83,7 @@ public class LemmaTellDetector implements SnarkTellDetector {
 				"certainly", "definitely", "evidently", "surely"};
 		words.addAll(Arrays.asList(superiorityWords));
 		d.setTellWords(words);
-		SnarkTell t = d.detect(sentences);
+		SnarkTell t = d.detect(annotation);
 		System.out.println(t);
 		/*
 		 * Knowing - “Unsurprisingly”, “obviously”, “clearly”, “plainly”, “apparently”

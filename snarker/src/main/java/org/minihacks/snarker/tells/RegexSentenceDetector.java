@@ -46,10 +46,11 @@ public class RegexSentenceDetector implements SnarkTellDetector {
 	}
 	
 	@Override
-	public SnarkTell detect(List<CoreMap> sentences) {
+	public SnarkTell detect(Annotation annotation) {
 		SnarkTell retval = new SnarkTell();
 		List<String> offenders = new LinkedList<String>();
 		
+		List<CoreMap> sentences = annotation.get(CoreAnnotations.SentencesAnnotation.class);
 		for (CoreMap sentence : sentences) {
 			String sentenceString = sentence.toString().toLowerCase();
 			for (Pattern tellPhrase : tellExpressions) {
@@ -74,7 +75,6 @@ public class RegexSentenceDetector implements SnarkTellDetector {
 		pipeline = new StanfordCoreNLP(props);
 
 		Annotation annotation = pipeline.process("“You might think that Williams' life, by default, is frantic and interesting. But you would be very, very wrong.”");
-		List<CoreMap> sentences = annotation.get(CoreAnnotations.SentencesAnnotation.class);
 
 		RegexSentenceDetector d = new RegexSentenceDetector();
 		d.setName("KnowingPhrases");
@@ -90,11 +90,10 @@ public class RegexSentenceDetector implements SnarkTellDetector {
 		};
 		phrases.addAll(Arrays.asList(sarcasmPatterns));
 		d.setTellExpressions(phrases);
-		SnarkTell t = d.detect(sentences);
+		SnarkTell t = d.detect(annotation);
 		System.out.println(t);
 		
 		annotation = pipeline.process("And have the buttler draw a warm batch, please! something else. Thanks for the net neutrality, Oligarchs.");
-		sentences = annotation.get(CoreAnnotations.SentencesAnnotation.class);
 		d = new RegexSentenceDetector();
 		d.setName("Sarcasm");
 		phrases = new HashSet<>();
@@ -104,7 +103,7 @@ public class RegexSentenceDetector implements SnarkTellDetector {
 		};
 		phrases.addAll(Arrays.asList(sarcasmPatterns));
 		d.setTellExpressions(phrases);
-		t = d.detect(sentences);
+		t = d.detect(annotation);
 		System.out.println(t);
 	}
 

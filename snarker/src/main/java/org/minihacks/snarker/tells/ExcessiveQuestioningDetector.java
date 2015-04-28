@@ -28,11 +28,12 @@ public class ExcessiveQuestioningDetector implements SnarkTellDetector {
 
 
 	@Override
-	public SnarkTell detect(List<CoreMap> sentences) {
+	public SnarkTell detect(Annotation annotation) {
 		SnarkTell retval = new SnarkTell();
 		List<String> offenders = new LinkedList<String>();
 		List<String> candidates = new LinkedList<String>();
 		
+		List<CoreMap> sentences = annotation.get(CoreAnnotations.SentencesAnnotation.class);
 		for(CoreMap sentence : sentences)
 		{
 			if(sentence.toString().endsWith("?") )
@@ -61,22 +62,19 @@ public class ExcessiveQuestioningDetector implements SnarkTellDetector {
 		pipeline = new StanfordCoreNLP(props);
 		
 		Annotation annotation = pipeline.process("Sentence A. Sentence B. Sentence C.");
-		List<CoreMap> sentences = annotation.get(CoreAnnotations.SentencesAnnotation.class);
 
 		ExcessiveQuestioningDetector d = new ExcessiveQuestioningDetector();
-		SnarkTell s = d.detect(sentences);
+		SnarkTell s = d.detect(annotation);
 		System.out.println(s);
 		
 		annotation = pipeline.process("Am I helping a proprietor of sugary drinks look better by accepting its money to cover something I genuinely care about, or that someone else may not even pay me to cover? If I'm critical, will my article disappear? What about my career?");
-		sentences = annotation.get(CoreAnnotations.SentencesAnnotation.class);
 		d = new ExcessiveQuestioningDetector();
-		s = d.detect(sentences);
+		s = d.detect(annotation);
 		System.out.println(s);
 		
 		annotation = pipeline.process("A sentence that ends in a question? But then something that doesn't. Followed by another question? Followed by a declarative sentence. Followed by yet another question?");
-		sentences = annotation.get(CoreAnnotations.SentencesAnnotation.class);
 		d = new ExcessiveQuestioningDetector();
-		s = d.detect(sentences);
+		s = d.detect(annotation);
 		System.out.println(s);
 	}
 }

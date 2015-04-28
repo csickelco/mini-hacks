@@ -68,10 +68,11 @@ public class FilePhraseDetector implements SnarkTellDetector {
 	}
 
 	@Override
-	public SnarkTell detect(List<CoreMap> sentences) {
+	public SnarkTell detect(Annotation annotation) {
 		SnarkTell retval = new SnarkTell();
 		List<String> offenders = new LinkedList<String>();
 		
+		List<CoreMap> sentences = annotation.get(CoreAnnotations.SentencesAnnotation.class);
 		for (CoreMap sentence : sentences) {
 			String sentenceString = sentence.toString().toLowerCase();
 			for (Pattern tellPhrase : tellExpressions) {
@@ -96,13 +97,12 @@ public class FilePhraseDetector implements SnarkTellDetector {
 		pipeline = new StanfordCoreNLP(props);
 
 		Annotation annotation = pipeline.process("something something something Kick ass something something");
-		List<CoreMap> sentences = annotation.get(CoreAnnotations.SentencesAnnotation.class);
 
 		//http://fffff.at/googles-official-list-of-bad-words/
 		FilePhraseDetector d = new FilePhraseDetector();
 		d.setName("Profanity Detector");
 		d.setFile("profanity.txt");
-		SnarkTell t = d.detect(sentences);
+		SnarkTell t = d.detect(annotation);
 		System.out.println(t);
 	}
 }

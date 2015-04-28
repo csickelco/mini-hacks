@@ -49,9 +49,8 @@ public class TestFileLemmaTellDetector {
 	@Test
 	public void testEnlLossButInQuotes() {
 		Annotation annotation = pipeline.process("All the justices need to do, DeSanctis explains, is find that the Louisiana court’s determination that Brumfield is not disabled—without giving him a chance to prove that he is—is \"unreasonable\" under federal law.");
-		List<CoreMap> sentences = annotation.get(CoreAnnotations.SentencesAnnotation.class);
 
-		SnarkTell st = knowingDetector.detect(sentences);
+		SnarkTell st = knowingDetector.detect(annotation);
 		logger.info("Result {}", st.toString());
 		assertFalse(st.isTellFound());
 	}
@@ -61,9 +60,8 @@ public class TestFileLemmaTellDetector {
 		//Ignore is on the EnlLoss list, this sentence has "ignoring"
 		String sentence = "But denying that Calipari gets by far the better end of the deal is ignoring reality.";
 		Annotation annotation = pipeline.process(sentence);
-		List<CoreMap> sentences = annotation.get(CoreAnnotations.SentencesAnnotation.class);
 
-		SnarkTell st = knowingDetector.detect(sentences);
+		SnarkTell st = knowingDetector.detect(annotation);
 		logger.info("Result {}", st.toString());
 		assertTrue(st.isTellFound());
 		assertEquals(1, st.getOffenders().size());
@@ -75,9 +73,8 @@ public class TestFileLemmaTellDetector {
 	public void testEvalNegative() {
 		String sentence = "It is a sad fact of the criminal justice system that those states that most enthusiastically administer the death penalty are also the most incompetent at doing so.";
 		Annotation annotation = pipeline.process(sentence);
-		List<CoreMap> sentences = annotation.get(CoreAnnotations.SentencesAnnotation.class);
 
-		SnarkTell st = hostileDetector.detect(sentences);
+		SnarkTell st = hostileDetector.detect(annotation);
 		logger.info("Result {}", st.toString());
 		assertTrue(st.isTellFound());
 		assertEquals(1, st.getOffenders().size());

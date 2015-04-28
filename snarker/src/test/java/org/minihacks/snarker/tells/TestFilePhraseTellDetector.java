@@ -50,9 +50,8 @@ public class TestFilePhraseTellDetector {
 	public void profanity() {
 		String sentence = "He can be a dick.";
 		Annotation annotation = pipeline.process(sentence);
-		List<CoreMap> sentences = annotation.get(CoreAnnotations.SentencesAnnotation.class);
 
-		SnarkTell st = profanityDetector.detect(sentences);
+		SnarkTell st = profanityDetector.detect(annotation);
 		logger.info("Result {}", st.toString());
 		assertTrue(st.isTellFound());
 		assertEquals(1, st.getOffenders().size());
@@ -63,21 +62,29 @@ public class TestFilePhraseTellDetector {
 	public void notProfanity() {
 		String sentence = "Senator Dick Durbin met with his aides.";
 		Annotation annotation = pipeline.process(sentence);
-		List<CoreMap> sentences = annotation.get(CoreAnnotations.SentencesAnnotation.class);
 
-		SnarkTell st = profanityDetector.detect(sentences);
+		SnarkTell st = profanityDetector.detect(annotation);
 		logger.info("Result {}", st.toString());
 		assertFalse(st.isTellFound());
 	}
 	
 	@Test
 	public void conversational() {
-		String sentence = "What they found was this:\n\"Oh yeah the weekend. People are gonna get drunk & think that I’m sexy!\" - fat chicks everywhere.\n— Trevor Noah (@Trevornoah) October 14, 2011";
+		String sentence = "Oh yeah the weekend. People are gonna get drunk & think that I’m sexy!";
 		Annotation annotation = pipeline.process(sentence);
-		List<CoreMap> sentences = annotation.get(CoreAnnotations.SentencesAnnotation.class);
 
-		SnarkTell st = conversationalDetector.detect(sentences);
+		SnarkTell st = conversationalDetector.detect(annotation);
 		logger.info("Result {}", st.toString());
 		assertTrue(st.isTellFound());
+	}
+	
+	@Test
+	public void conversationalQuoted() {
+		String sentence = "What they found was this:\n\"Oh yeah the weekend. People are gonna get drunk & think that I’m sexy!\" - fat chicks everywhere.\n— Trevor Noah (@Trevornoah) October 14, 2011";
+		Annotation annotation = pipeline.process(sentence);
+
+		SnarkTell st = conversationalDetector.detect(annotation);
+		logger.info("Result {}", st.toString());
+		assertFalse(st.isTellFound());
 	}
 }

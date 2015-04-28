@@ -45,11 +45,12 @@ public class RegexAllDetector implements SnarkTellDetector {
 	}
 	
 	@Override
-	public SnarkTell detect(List<CoreMap> sentences) {
+	public SnarkTell detect(Annotation annotation) {
 		SnarkTell retval = new SnarkTell();
 		List<String> offenders = new LinkedList<String>();
 		StringBuilder sb = new StringBuilder();
 		
+		List<CoreMap> sentences = annotation.get(CoreAnnotations.SentencesAnnotation.class);
 		for (CoreMap sentence : sentences) {
 			String sentenceString = sentence.toString().toLowerCase();
 			sb.append(sentenceString.toString()).append(" ");
@@ -87,9 +88,8 @@ public class RegexAllDetector implements SnarkTellDetector {
 		d2.setTellExpressions(phrases2);
 		
 		Annotation annotation = pipeline.process("Private jets everywhere? Of course!");
-		List<CoreMap> sentences = annotation.get(CoreAnnotations.SentencesAnnotation.class);
 
-		SnarkTell t = d2.detect(sentences);
+		SnarkTell t = d2.detect(annotation);
 		System.out.println(t);
 		
 		//Sarcasm - Excessive exclamations, particularly ,(few words*)…! (And have the buttler draw a warm batch, please!”
@@ -104,9 +104,7 @@ public class RegexAllDetector implements SnarkTellDetector {
 		d3.setTellExpressions(phrases3);
 		
 		annotation = pipeline.process("It would have been more tolerable if the hilariously inappropriate cultural decor (fire-breathers! Kabobs! Turbans!)");
-		sentences = annotation.get(CoreAnnotations.SentencesAnnotation.class);
-
-		t = d3.detect(sentences);
+		t = d3.detect(annotation);
 		System.out.println(t);
 	}
 

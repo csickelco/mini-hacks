@@ -96,8 +96,7 @@ public class AccuracyTestKnowingTellDetector {
 		Resource[] resources=r.getResources(processPath);
 		for (Resource resource : resources) {
 			Annotation annotation = pipeline.process(IOUtils.toString(new FileReader(resource.getFile())));
-			List<CoreMap> sentences = annotation.get(CoreAnnotations.SentencesAnnotation.class);
-			SnarkTell st = d.detect(sentences);
+			SnarkTell st = d.detect(annotation);
 			logger.info("Result {}", st.toString());
 		}
 	}

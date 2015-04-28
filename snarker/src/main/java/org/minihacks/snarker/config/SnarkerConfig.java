@@ -39,7 +39,7 @@ public class SnarkerConfig {
 		StanfordCoreNLP pipeline;
 		
 		Properties props = new Properties();
-		props.setProperty("annotators", "tokenize, ssplit, pos, lemma");
+		props.setProperty("annotators", "tokenize, ssplit, pos, lemma, quote");
 		pipeline = new StanfordCoreNLP(props);
 
 		return pipeline;
