@@ -23,13 +23,13 @@ public class FeedDownloader {
 		String filePath="/Users/christinasickelco/Documents/snark_content/";
 		//String rssUrl = "http://feeds.gawker.com/gawker/full#_ga=1.231192927.1110491708.1425241352";
 		//String rssUrl = "http://topics.nytimes.com/top/opinion/editorialsandoped/oped/contributors/index.html?rss=1";
-		//String rssUrl = "http://www.wonkette.com/feed";
+		String rssUrl = "http://www.wonkette.com/feed";
 		//String rssUrl = "http://www.usnews.com/rss/opinion";
 		//String rssUrl = "http://fulltextrssfeed.com/www.neatorama.com/feed";
 		//String rssUrl = "http://hosted2.ap.org/atom/APDEFAULT/3d281c11a96b4ad082fe88aa0db04305";
 		//String rssUrl = "http://feeds.reuters.com/reuters/topNews";
-		String rssUrl = "http://news.google.com/news?pz=1&cf=all&ned=us&hl=en&topic=b&output=rss";
-		String filePrefix = filePath + "googlenews-" + System.currentTimeMillis() + "-";
+		//String rssUrl = "http://news.google.com/news?pz=1&cf=all&ned=us&hl=en&topic=b&output=rss";
+		String filePrefix = filePath + "wonkette-" + System.currentTimeMillis() + "-";
         int limit=50;
         ArticleExtractor ae = ArticleExtractor.INSTANCE;
         

@@ -17,15 +17,29 @@ import edu.stanford.nlp.pipeline.StanfordCoreNLP;
 import edu.stanford.nlp.util.CoreMap;
 
 public class Lemmatizer {
+	private StanfordCoreNLP pipeline;
 	
-	public void process(String file) throws IOException {
-		StanfordCoreNLP pipeline;
-		ArticleExtractor ae = ArticleExtractor.INSTANCE;
-		
+	public Lemmatizer() {
 		Properties props = new Properties();
 		props.setProperty("annotators", "tokenize, ssplit, pos, lemma");
 		pipeline = new StanfordCoreNLP(props);
+	}
+	
+	public String lemmatizeString(String line) {
+		StringBuilder sb = new StringBuilder();
+		Annotation annotation = pipeline.process(line);
+		List<CoreMap> sentences = annotation.get(CoreAnnotations.SentencesAnnotation.class);
+		for (CoreMap sentence : sentences) {
+	        for (CoreLabel token: sentence.get(TokensAnnotation.class)) {
+	        	String lemma = token.lemma();
+	        	sb.append(token.value()).append(": ").append(lemma).append("\n");
+	        }
+		}
 		
+		return sb.toString();
+	}
+	
+	public void process(String file) throws IOException {
 		System.out.println("=== BEGIN ===");
 		InputStream in = null;
 		try {
@@ -59,8 +73,8 @@ public class Lemmatizer {
 	public static void main(String[] args) throws Exception {
 		String file = "overstated+vice.txt";
 		Lemmatizer l = new Lemmatizer();
-		l.process(file);
-
+		//l.process(file);
+		System.out.println(l.lemmatizeString("jerks jerk mislead misleads mislead can't emphasize cannot emphasize can not emphasize"));
 	}
 
 }

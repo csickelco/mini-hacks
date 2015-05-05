@@ -49,6 +49,7 @@ public class SnarkerConfig {
 	public List<SnarkTellDetector> detectors () throws IOException {
 		List<SnarkTellDetector> retval = new LinkedList<SnarkTellDetector>();
 		retval.add(knowingFileLemmaDetector());
+		retval.add(knowingPhraseLemmaDetector());
 		retval.add(hostileFileLemmaDetector());
 		retval.add(conversationalDetector());
 		retval.add(oneWordSentence());
@@ -121,11 +122,26 @@ public class SnarkerConfig {
 				".*now you know.*",
 				".*as always.*",
 				".*cannot emphasize.*",
-				".*can't emphasize.*"
+				".*can't emphasize.*",
+				".*pretty sure.*"
 		};
 		phrases.addAll(Arrays.asList(knowingWords));
 		knowingPhraseDetector.setTellExpressions(phrases);
 		return knowingPhraseDetector;
+	}
+	
+	@Bean
+	public RegexSentenceDetector knowingPhraseLemmaDetector() {
+		RegexSentenceDetector retval = new RegexSentenceDetector();
+		retval.setName("KnowingPhrases");
+		retval.setDimension(SnarkDimension.KNOWING);
+		Set<String> phrases = new HashSet<>();
+		String[] knowingWords = new String[]{
+				".*can not emphasize.*"
+		};
+		phrases.addAll(Arrays.asList(knowingWords));
+		retval.setTellExpressions(phrases);
+		return retval;
 	}
 	
 	@Bean
